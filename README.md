@@ -2,6 +2,8 @@
 
 **Live demonstration of Verity's Data Business platform for the unDavos 2026 keynote.**
 
+**Repository**: https://github.com/plur9/verity-demo
+
 ## Overview
 
 This demo tells "Elena's Freedom" story - showing how a tech event curator earns passive income ($24 while sleeping) through autonomous data agent commerce on the blockchain.
