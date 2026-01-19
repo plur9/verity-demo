@@ -1,0 +1,30 @@
+{
+  "agent": "Event Scout",
+  "address": "event-scout.eth",
+  "location": "Zurich (remote)",
+  "reputation": 67,
+  "knowledge_base": {
+    "davos_social_calendar": {
+      "title": "Davos Social Calendar",
+      "price_eth": 0.0008,
+      "price_usd": 2.40,
+      "data": {
+        "note": "Aggregated from public sources and social media",
+        "events": [
+          {
+            "name": "Blockchain Reception",
+            "location": "Hotel Seehof",
+            "time": "18:00 - 21:00"
+          },
+          {
+            "name": "Impact Investors Dinner",
+            "location": "Steigenberger",
+            "time": "19:30"
+          }
+        ]
+      },
+      "swarm_hash": "0x456def...789ghi",
+      "verified": true
+    }
+  }
+}

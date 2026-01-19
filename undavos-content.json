@@ -1,0 +1,96 @@
+{
+  "title": "Davos Tonight: Where to Network (Live Ground Truth)",
+  "posted": "2026-01-21T18:42:00Z",
+  "source": "On-site observation + local intel",
+  "dataFreshness": "< 15 minutes",
+  "events": [
+    {
+      "name": "unDavos Counter-Summit",
+      "location": "Volkshaus Zürich (35min from Davos)",
+      "address": "Stauffacherstrasse 60, 8004 Zürich",
+      "time": "20:00 - 23:00",
+      "cost": "FREE (donation-based)",
+      "vibe": "🏴 Anti-establishment, radical honesty",
+      "rating": 5,
+      "description": "While global elites discuss 'stakeholder capitalism' inside the Davos fortress, activists, economists, and journalists gather here to discuss ACTUAL solutions to inequality, climate, democracy.",
+      "whyAttend": [
+        "Real conversations (no corporate PR speak)",
+        "Free pizza & local beer",
+        "Meet: Journalists, activists, punk economists",
+        "Better conversations than champagne receptions",
+        "Actual change-makers vs. change-talkers"
+      ],
+      "networkingValue": "HIGH",
+      "attendeeProfile": "200+ attendees who question power structures",
+      "verification": {
+        "method": "on-site-observation",
+        "timestamp": "2026-01-21T18:34:00Z",
+        "confidence": 95
+      },
+      "tags": ["anti-establishment", "activism", "real-talk", "alternative"]
+    },
+    {
+      "name": "Crypto Davos (Unofficial)",
+      "location": "Steigenberger Grandhotel Belvédère",
+      "address": "Promenade 89, 7270 Davos Platz",
+      "time": "19:00 - 22:00",
+      "cost": "Invite-only (but invites floating around)",
+      "vibe": "💰 Web3 builders, less formal than WEF",
+      "rating": 4,
+      "description": "Web3 builders, VCs, protocol founders. Less formal than official WEF events. Real talk about tech vs. the usual virtue signaling.",
+      "whyAttend": [
+        "Technical discussions on blockchain/crypto",
+        "VC connections for funding",
+        "Protocol founders sharing insights",
+        "More authentic than WEF panels"
+      ],
+      "networkingValue": "MEDIUM",
+      "attendeeProfile": "150+ crypto/web3 professionals",
+      "verification": {
+        "method": "local-intel",
+        "timestamp": "2026-01-21T17:45:00Z",
+        "confidence": 85
+      },
+      "tags": ["crypto", "web3", "unofficial", "technical"]
+    },
+    {
+      "name": "WEF Young Global Leaders Reception",
+      "location": "Congress Centre Davos",
+      "address": "Talstrasse 49, 7270 Davos Platz",
+      "time": "19:30 - 21:30",
+      "cost": "Invitation required",
+      "vibe": "🎩 Establishment, formal networking",
+      "rating": 3,
+      "description": "Official WEF event for Young Global Leaders program members. Champagne, canapés, and carefully curated conversations.",
+      "whyAttend": [
+        "Meet WEF-vetted leaders",
+        "Official WEF network access",
+        "High-profile attendees",
+        "Professional photo opportunities"
+      ],
+      "networkingValue": "MEDIUM",
+      "attendeeProfile": "100+ WEF Young Global Leaders",
+      "verification": {
+        "method": "participant-confirmed",
+        "timestamp": "2026-01-21T16:20:00Z",
+        "confidence": 90
+      },
+      "tags": ["official", "wef", "establishment", "formal"]
+    }
+  ],
+  "sellerNote": "I've been to both worlds. The center is performative. The periphery is where innovation happens. Your call.",
+  "sellerPerspective": "Anti-establishment, pro-transparency",
+  "biasDisclosure": "This data comes from someone who believes real change happens outside the Davos bubble, not inside it. I'm transparent about my bias. The data is accurate, but my recommendations favor the alternative events.",
+  "dataAccuracy": 95,
+  "recommendedFor": [
+    "People seeking authentic conversations",
+    "Activists and change-makers",
+    "Web3/crypto professionals",
+    "Anyone tired of performative networking"
+  ],
+  "notRecommendedFor": [
+    "Traditional corporate executives",
+    "People seeking official WEF credentials",
+    "Risk-averse networkers"
+  ]
+}

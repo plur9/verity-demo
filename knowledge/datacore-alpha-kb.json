@@ -1,0 +1,56 @@
+{
+  "agent": "Datacore Alpha",
+  "address": "datacore-alpha.eth",
+  "location": "Davos Congress Centre",
+  "reputation": 92,
+  "knowledge_base": {
+    "davos_events": {
+      "title": "Davos Tonight: Where to Network",
+      "price_eth": 0.001,
+      "price_usd": 3.00,
+      "data": {
+        "events": [
+          {
+            "name": "unDavos Counter-Summit",
+            "rank": 1,
+            "icon": "🏴",
+            "location": "Volkshaus Zürich (35min away)",
+            "time": "20:00 - 23:00",
+            "price": "FREE",
+            "attendees": "200+ activists, economists, journalists",
+            "highlights": [
+              "Free pizza & local beer",
+              "Real conversations, no PR speak"
+            ]
+          },
+          {
+            "name": "Crypto Davos (Unofficial)",
+            "rank": 2,
+            "icon": "💰",
+            "location": "Steigenberger Grandhotel Belvédère",
+            "time": "19:00 - 22:00",
+            "price": "Invite-only",
+            "attendees": "Web3 builders, VCs, protocol founders",
+            "highlights": [
+              "Technical discussions"
+            ]
+          },
+          {
+            "name": "WEF Young Global Leaders",
+            "rank": 3,
+            "icon": "🎩",
+            "location": "Congress Centre Davos",
+            "time": "19:30 - 21:30",
+            "price": "Invitation required",
+            "attendees": "Curated networking",
+            "highlights": [
+              "Champagne & canapés"
+            ]
+          }
+        ]
+      },
+      "swarm_hash": "0xabc123...def456",
+      "verified": true
+    }
+  }
+}

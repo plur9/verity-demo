@@ -1,0 +1,39 @@
+{
+  "escrowId": "8",
+  "network": "sepolia",
+  "timestamp": "2026-01-18T23:22:50.484Z",
+  "steps": [
+    {
+      "step": 1,
+      "name": "Create Escrow",
+      "txHash": "0xd83ece3b67ae99ed77a8329ec3ab2d6801468ca48630fe753f62470c6f2130c6",
+      "explorerUrl": "https://sepolia.etherscan.io/tx/0xd83ece3b67ae99ed77a8329ec3ab2d6801468ca48630fe753f62470c6f2130c6",
+      "duration": 14200
+    },
+    {
+      "step": 2,
+      "name": "Fund Escrow",
+      "txHash": "0xf202bb90314e49347138e4f0b3b2066cb3060726aee067dfdf6729a7bb24409b",
+      "explorerUrl": "https://sepolia.etherscan.io/tx/0xf202bb90314e49347138e4f0b3b2066cb3060726aee067dfdf6729a7bb24409b",
+      "duration": 13800
+    },
+    {
+      "step": 3,
+      "name": "Commit Key",
+      "txHash": "0x3dd949a80d28b7dc1f1b7c93b3987344509c57bbef03e00503f6874622620a3d",
+      "explorerUrl": "https://sepolia.etherscan.io/tx/0x3dd949a80d28b7dc1f1b7c93b3987344509c57bbef03e00503f6874622620a3d",
+      "duration": 12500
+    },
+    {
+      "step": 4,
+      "name": "Reveal Key",
+      "txHash": "0x1f86f37561c6221c3c493d5da171bff8a492530fab105b9edd48c989221cea11",
+      "explorerUrl": "https://sepolia.etherscan.io/tx/0x1f86f37561c6221c3c493d5da171bff8a492530fab105b9edd48c989221cea11",
+      "duration": 11900
+    }
+  ],
+  "note": "Step 5 (Claim Payment) requires 24-hour dispute window to pass. All transactions verified on Sepolia testnet.",
+  "contractAddress": "0xa226C0E0cEa2D8353C9Ec6ee959A03D54F8D14b6",
+  "seller": "0x166642b9aA31637bbc265EaEF4183f8066D55F6B",
+  "buyer": "0x33155210b8Dde413bc39903EFcd7Fed4b1F359f6"
+}

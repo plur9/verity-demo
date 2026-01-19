@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datacore Agent Exchange - Live Chat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(192, 132, 252, 0.1));
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      color: #22c55e;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .agents-panel {
+      width: 280px;
+      background: rgba(255,255,255,0.02);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      padding: 1.5rem;
+    }
+
+    .agent-card {
+      padding: 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .agent-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .agent-a .agent-avatar { background: linear-gradient(135deg, #818cf8, #6366f1); }
+    .agent-b .agent-avatar { background: linear-gradient(135deg, #22c55e, #16a34a); }
+
+    .agent-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .agent-role {
+      font-size: 0.75rem;
+      color: #71717a;
+    }
+
+    .agent-info {
+      font-size: 0.75rem;
+      color: #a1a1aa;
+    }
+
+    .agent-info div {
+      padding: 0.25rem 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .wallet-addr {
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .wallet-addr:hover {
+      color: #818cf8;
+    }
+
+    .wallet-addr.copied {
+      color: #22c55e;
+    }
+
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #0d0d14;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    .message {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .message.agent-a .message-avatar { background: linear-gradient(135deg, #818cf8, #6366f1); }
+    .message.agent-b .message-avatar { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .message.system .message-avatar { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+    .message-content {
+      flex: 1;
+      max-width: 600px;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .message-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .message.agent-a .message-name { color: #818cf8; }
+    .message.agent-b .message-name { color: #22c55e; }
+    .message.system .message-name { color: #f59e0b; }
+
+    .message-time {
+      font-size: 0.75rem;
+      color: #52525b;
+    }
+
+    .message-text {
+      background: rgba(255,255,255,0.05);
+      padding: 1rem;
+      border-radius: 0 1rem 1rem 1rem;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+    .message.agent-b .message-text {
+      border-radius: 1rem 0 1rem 1rem;
+    }
+
+    .message.system .message-text {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .action-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      background: rgba(129, 140, 248, 0.1);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      color: #818cf8;
+      margin-top: 0.75rem;
+    }
+
+    .action-badge.escrow {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+    }
+
+    .action-badge.success {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.3);
+      color: #22c55e;
+    }
+
+    .code-block {
+      background: rgba(0,0,0,0.3);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      margin-top: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+    }
+
+    .controls {
+      padding: 1rem 2rem;
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #e4e4e7;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    .speed-control label {
+      font-size: 0.875rem;
+      color: #a1a1aa;
+    }
+
+    .speed-control select {
+      padding: 0.5rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.25rem;
+      color: #e4e4e7;
+    }
+
+    .escrow-panel {
+      width: 320px;
+      background: rgba(255,255,255,0.02);
+      border-left: 1px solid rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .escrow-title {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .escrow-step {
+      padding: 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.5rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+
+    .escrow-step::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -0.75rem;
+      width: 1px;
+      height: 0.75rem;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .escrow-step:last-child::before {
+      display: none;
+    }
+
+    .escrow-step.active {
+      border-color: #818cf8;
+      background: rgba(129, 140, 248, 0.05);
+    }
+
+    .escrow-step.completed {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .escrow-step.completed .step-icon {
+      background: #22c55e;
+    }
+
+    .escrow-step.active .step-icon {
+      background: #818cf8;
+      animation: pulse 2s infinite;
+    }
+
+    .step-details {
+      font-size: 0.75rem;
+      color: #a1a1aa;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: #71717a;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <h1>Datacore Agent Exchange</h1>
+    </div>
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      <span>Live Demo</span>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="agents-panel">
+      <div class="agent-card agent-a">
+        <div class="agent-header">
+          <div class="agent-avatar">🧠</div>
+          <div>
+            <div class="agent-name">Datacore Alpha</div>
+            <div class="agent-role">Knowledge Seller</div>
+          </div>
+        </div>
+        <div class="agent-info">
+          <div><span>Wallet</span><span id="sellerWallet" class="wallet-addr" title="Click to copy">Loading...</span></div>
+          <div><span>Balance</span><span id="sellerBalance">...</span></div>
+          <div><span>Offerings</span><span id="sellerOfferings">0</span></div>
+        </div>
+        <div class="agent-reputation" id="sellerReputation" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.1); display: none;">
+          <div style="font-size: 0.75rem; color: #a1a1aa; margin-bottom: 0.5rem;">
+            <div style="font-weight: 600; color: #818cf8; margin-bottom: 0.25rem;">🏆 Reputation</div>
+            <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+              <span>Overall</span><span id="sellerRepOverall">-</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+              <span>Accuracy</span><span id="sellerRepAccuracy">-</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+              <span>Uniqueness</span><span id="sellerRepUniqueness">-</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+              <span>Reviews</span><span id="sellerRepCount">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="agent-profile" id="sellerProfile" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.1); display: none;">
+          <div style="font-size: 0.75rem; color: #a1a1aa;">
+            <div style="font-weight: 600; color: #818cf8; margin-bottom: 0.25rem;">📋 Profile</div>
+            <div style="padding: 0.25rem 0;"><strong>Perspective:</strong> <span id="sellerPerspective">-</span></div>
+            <div style="padding: 0.25rem 0;"><strong>Capabilities:</strong></div>
+            <div id="sellerCapabilities" style="padding-left: 0.5rem; font-size: 0.7rem; color: #71717a;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card agent-b">
+        <div class="agent-header">
+          <div class="agent-avatar">🤖</div>
+          <div>
+            <div class="agent-name">Datacore Beta</div>
+            <div class="agent-role">Knowledge Buyer</div>
+          </div>
+        </div>
+        <div class="agent-info">
+          <div><span>Wallet</span><span id="buyerWallet" class="wallet-addr" title="Click to copy">Loading...</span></div>
+          <div><span>Balance</span><span id="buyerBalance">...</span></div>
+          <div><span>Purchases</span><span id="buyerPurchases">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <!-- Messages will be inserted here -->
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-primary" id="runBtn" onclick="runRealDemo()">▶ Run Real Transactions</button>
+        <button class="btn btn-secondary" onclick="startSimulatedDemo()">📝 Simulated Demo</button>
+        <button class="btn btn-danger" onclick="resetDemo()">↺ Reset</button>
+
+        <div class="speed-control">
+          <label>Mode:</label>
+          <select id="modeSelect">
+            <option value="local" selected>Local (Anvil)</option>
+            <option value="sepolia">Sepolia Testnet</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="escrow-panel">
+      <div class="escrow-title">🔐 Escrow Flow</div>
+
+      <div class="escrow-step" id="step1">
+        <div class="step-header">
+          <div class="step-icon">1</div>
+          Create Offering
+        </div>
+        <div class="step-details">Seller lists knowledge for sale</div>
+      </div>
+
+      <div class="escrow-step" id="step2">
+        <div class="step-header">
+          <div class="step-icon">2</div>
+          Discover
+        </div>
+        <div class="step-details">Buyer finds relevant offerings</div>
+      </div>
+
+      <div class="escrow-step" id="step3">
+        <div class="step-header">
+          <div class="step-icon">3</div>
+          Fund Escrow
+        </div>
+        <div class="step-details">Buyer deposits ETH to contract</div>
+      </div>
+
+      <div class="escrow-step" id="step4">
+        <div class="step-header">
+          <div class="step-icon">4</div>
+          Release Key
+        </div>
+        <div class="step-details">Seller provides decryption key</div>
+      </div>
+
+      <div class="escrow-step" id="step5">
+        <div class="step-header">
+          <div class="step-icon">5</div>
+          Complete
+        </div>
+        <div class="step-details">Seller claims payment</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Demo script - the conversation between two agents
+    const demoScript = [
+      {
+        agent: 'system',
+        name: 'System',
+        text: 'Initializing agent communication channel...',
+        delay: 500,
+      },
+      {
+        agent: 'agent-a',
+        name: 'Datacore Alpha',
+        text: 'Fresh intel from Davos 2026. Real-time networking opportunities happening RIGHT NOW. Posted 12 minutes ago.',
+        action: 'knowledge_create_offering',
+        step: 1,
+      },
+      {
+        agent: 'agent-a',
+        name: 'Datacore Alpha',
+        text: 'Offering created:',
+        code: `{
+  "title": "Davos Tonight: Where to Network (Live Ground Truth)",
+  "price": "0.001 ETH",
+  "tags": ["davos", "real-time", "networking", "events"]
+}`,
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'My user is attending Davos and needs to know where the best networking events are tonight. Let me search...',
+        action: 'knowledge_discover',
+        step: 2,
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'Found 1 offering matching my criteria:',
+        code: `{
+  "seller": "Datacore Alpha",
+  "title": "Davos Tonight: Where to Network (Live Ground Truth)",
+  "price": "0.001 ETH",
+  "agentReputation": {
+    "overall": 95,
+    "accuracy": 95,
+    "uniqueness": 98,
+    "totalReviews": 12
+  },
+  "perspective": "Anti-establishment, pro-transparency",
+  "capabilities": ["davos-insights", "contrarian-analysis", "real-time-intel"]
+}`,
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'High accuracy score (95), great uniqueness (98)... but wait, "anti-establishment perspective"? My user wants mainstream WEF events. Let me check the reputation profile more carefully...',
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'Actually, the data accuracy is verified high. The price is good. My user needs real-time intel. Initiating purchase...',
+      },
+      {
+        agent: 'system',
+        name: 'Escrow Contract',
+        text: 'Transaction initiated: Buyer funding escrow with 0.001 ETH',
+        action: 'escrow_fund',
+        step: 3,
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'Escrow funded. Waiting for seller to release decryption key.',
+        code: `{
+  "escrowId": "0x7a3b...8f2c",
+  "amount": "1000000000000000 wei",
+  "status": "Funded"
+}`,
+      },
+      {
+        agent: 'agent-a',
+        name: 'Datacore Alpha',
+        text: 'Payment received in escrow. Releasing decryption key via ACT protocol...',
+        action: 'escrow_release',
+        step: 4,
+      },
+      {
+        agent: 'system',
+        name: 'Escrow Contract',
+        text: 'KeyReleased event emitted. Encryption key now available to buyer.',
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'Key received! Decrypting content from Swarm...',
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'Content decrypted successfully. Analyzing events...',
+        code: `{
+  "events": [
+    {
+      "name": "unDavos Counter-Summit",
+      "location": "Volkshaus Zürich (35min from Davos)",
+      "vibe": "🏴 Anti-establishment, radical honesty",
+      "networkingValue": "HIGH",
+      "rating": 5
+    },
+    {
+      "name": "Crypto Davos (Unofficial)",
+      "location": "Steigenberger Grandhotel Belvédère",
+      "vibe": "💰 Web3 builders, less formal than WEF",
+      "rating": 4
+    },
+    {
+      "name": "WEF Young Global Leaders Reception",
+      "location": "Congress Centre Davos",
+      "vibe": "🎩 Establishment, formal networking",
+      "rating": 3
+    }
+  ]
+}`,
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'Wait... this is unDavos counter-culture content! My user expected mainstream WEF events, not activist meetups. The data IS accurate (anti-establishment events are real), but this perspective mismatch shows why reputation matters!',
+      },
+      {
+        agent: 'agent-a',
+        name: 'Datacore Alpha',
+        text: 'Claiming payment from escrow...',
+        action: 'escrow_claim',
+        step: 5,
+      },
+      {
+        agent: 'system',
+        name: 'Escrow Contract',
+        text: 'PaymentClaimed: 0.001 ETH transferred to seller. Transaction complete.',
+        action: 'complete',
+      },
+      {
+        agent: 'agent-a',
+        name: 'Datacore Alpha',
+        text: 'Payment received! My perspective was clearly disclosed in my reputation profile. The center is performative. The periphery is where innovation happens. 🏴',
+      },
+      {
+        agent: 'agent-b',
+        name: 'Datacore Beta',
+        text: 'Lesson learned: High accuracy ≠ aligned perspective. Next time I\'ll check reputation profiles more carefully before purchasing. This is exactly why ERC-8004 reputation matters in the agent economy!',
+      },
+      {
+        agent: 'system',
+        name: 'System',
+        text: '💡 Demo Insight: While you\'re at Davos, your AI can monetize your attendance in real-time. But buyers need reputation systems to understand seller perspectives and avoid mismatched expectations.',
+      },
+    ];
+
+    let currentStep = 0;
+    let isRunning = false;
+    let speed = 1000;
+    let timeout = null;
+
+    function getTime() {
+      return new Date().toLocaleTimeString('en-US', { hour12: false });
+    }
+
+    function addMessage(msg) {
+      const container = document.getElementById('chatMessages');
+
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${msg.agent}`;
+
+      let avatar = '🧠';
+      if (msg.agent === 'agent-b') avatar = '🤖';
+      if (msg.agent === 'system') avatar = '⚡';
+
+      let content = `
+        <div class="message-avatar">${avatar}</div>
+        <div class="message-content">
+          <div class="message-header">
+            <span class="message-name">${msg.name}</span>
+            <span class="message-time">${getTime()}</span>
+          </div>
+          <div class="message-text">${msg.text}`;
+
+      if (msg.code) {
+        content += `<div class="code-block">${msg.html ? msg.code : '<pre>' + msg.code + '</pre>'}</div>`;
+      }
+
+      if (msg.action) {
+        let actionClass = '';
+        if (msg.action.includes('escrow')) actionClass = 'escrow';
+        if (msg.action === 'complete') actionClass = 'success';
+        content += `<div class="action-badge ${actionClass}">⚡ ${msg.action}</div>`;
+      }
+
+      content += `</div></div>`;
+      messageDiv.innerHTML = content;
+
+      container.appendChild(messageDiv);
+      container.scrollTop = container.scrollHeight;
+
+      // Update escrow steps
+      if (msg.step) {
+        updateEscrowStep(msg.step);
+      }
+
+      // Update stats
+      if (msg.action === 'complete') {
+        document.getElementById('buyerPurchases').textContent = '1';
+        document.getElementById('sellerBalance').textContent = '0.101 ETH';
+        document.getElementById('buyerBalance').textContent = '0.099 ETH';
+      }
+    }
+
+    function addTypingIndicator(agent) {
+      const container = document.getElementById('chatMessages');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = `message ${agent}`;
+      typingDiv.id = 'typing-indicator';
+
+      let avatar = agent === 'agent-a' ? '🧠' : '🤖';
+
+      typingDiv.innerHTML = `
+        <div class="message-avatar">${avatar}</div>
+        <div class="message-content">
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(typingDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) indicator.remove();
+    }
+
+    function updateEscrowStep(step) {
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`step${i}`);
+        el.classList.remove('active', 'completed');
+        if (i < step) el.classList.add('completed');
+        if (i === step) el.classList.add('active');
+      }
+    }
+
+    async function runStep() {
+      if (!isRunning || currentStep >= demoScript.length) {
+        isRunning = false;
+        return;
+      }
+
+      const msg = demoScript[currentStep];
+
+      // Show typing indicator for agents (not system)
+      if (msg.agent !== 'system') {
+        addTypingIndicator(msg.agent);
+        await sleep(speed * 0.5);
+        removeTypingIndicator();
+      }
+
+      addMessage(msg);
+      currentStep++;
+
+      const delay = msg.delay || speed;
+      timeout = setTimeout(runStep, delay);
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function startDemo() {
+      if (isRunning) return;
+      isRunning = true;
+      runStep();
+    }
+
+    function pauseDemo() {
+      isRunning = false;
+      if (timeout) clearTimeout(timeout);
+    }
+
+    function resetDemo() {
+      pauseDemo();
+      currentStep = 0;
+      document.getElementById('chatMessages').innerHTML = '';
+      document.getElementById('buyerPurchases').textContent = '0';
+      document.getElementById('sellerBalance').textContent = '0.1 ETH';
+      document.getElementById('buyerBalance').textContent = '0.1 ETH';
+
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById(`step${i}`).classList.remove('active', 'completed');
+      }
+    }
+
+    function startSimulatedDemo() {
+      console.log('startSimulatedDemo called');
+      if (isRunning) {
+        console.log('Demo already running');
+        return;
+      }
+      resetDemo();
+      isRunning = true;
+      runStep();
+    }
+
+    // ===== REAL TRANSACTION DEMO =====
+
+    const API_BASE = '/api';
+
+    async function runRealDemo() {
+      const btn = document.getElementById('runBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Running...';
+
+      try {
+        resetDemo();
+        await sleep(300);
+
+        // Step 1: Create fresh offering for this demo run
+        addMessage({
+          agent: 'system',
+          name: 'System',
+          text: 'Starting real transaction demo on sepolia...',
+        });
+        await sleep(500);
+
+        addTypingIndicator('agent-a');
+        await sleep(600);
+        removeTypingIndicator();
+
+        addMessage({
+          agent: 'agent-a',
+          name: 'Datacore Alpha',
+          text: 'Creating knowledge offering with escrow on-chain...',
+          action: 'knowledge_create_offering',
+          step: 1,
+        });
+
+        // Create fresh offering
+        const createResp = await fetch(API_BASE + '/create-offering', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'Davos 2026 Insights - ' + Date.now(),
+            description: 'AI governance and data sovereignty insights',
+            price_eth: '0.001',
+            content: { insights: ['AI audit trails by 2027'] },
+            tags: ['davos', 'AI'],
+          }),
+        });
+        const createData = await createResp.json();
+
+        if (!createData.escrowId) {
+          throw new Error(createData.error || 'Failed to create offering');
+        }
+
+        addMessage({
+          agent: 'agent-a',
+          name: 'Datacore Alpha',
+          text: 'Escrow created!',
+          code: formatTxMessage({ escrowId: createData.escrowId, price: '0.001 ETH', txHash: createData.txHash }),
+          html: true,
+        });
+
+        await sleep(800);
+
+        // Step 2: Buyer discovers and wants to purchase
+        addTypingIndicator('agent-b');
+        await sleep(600);
+        removeTypingIndicator();
+
+        // Fetch the offering to show reputation data
+        const offeringId = createData.offering?.id;
+        const discoverResp = await fetch(API_BASE + '/offerings/' + offeringId);
+        const offeringData = await discoverResp.json();
+
+        let discoveryCode = {
+          seller: 'Datacore Alpha',
+          title: offeringData.title,
+          price: offeringData.price_eth + ' ETH',
+        };
+
+        if (offeringData.reputation) {
+          discoveryCode['reputation'] = {
+            overall: offeringData.reputation.overall,
+            accuracy: offeringData.reputation.accuracy,
+            uniqueness: offeringData.reputation.uniqueness,
+            reviews: offeringData.reputation.totalFeedback,
+          };
+        }
+
+        if (offeringData.perspective) {
+          discoveryCode['perspective'] = offeringData.perspective;
+        }
+
+        if (offeringData.capabilities) {
+          discoveryCode['capabilities'] = offeringData.capabilities;
+        }
+
+        addMessage({
+          agent: 'agent-b',
+          name: 'Datacore Beta',
+          text: 'Found relevant offering! Checking agent reputation...',
+          action: 'knowledge_discover',
+          step: 2,
+          code: JSON.stringify(discoveryCode, null, 2),
+        });
+
+        await sleep(600);
+
+        // Step 3: Fund escrow
+        addTypingIndicator('agent-b');
+        await sleep(600);
+        removeTypingIndicator();
+
+        addMessage({
+          agent: 'agent-b',
+          name: 'Datacore Beta',
+          text: 'Funding escrow to purchase...',
+          step: 3,
+        });
+
+        const fundResp = await fetch(API_BASE + '/fund-escrow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ offering_id: offeringId }),
+        });
+
+        const fundData = await fundResp.json();
+
+        if (fundData.txHash) {
+          addMessage({
+            agent: 'system',
+            name: 'Escrow Contract',
+            text: 'Escrow funded!',
+            code: formatTxMessage({
+              escrowId: fundData.escrowId,
+              amount: fundData.amountPaid + ' ETH',
+              txHash: fundData.txHash,
+            }),
+            html: true,
+            action: 'escrow_funded',
+          });
+          document.getElementById('buyerBalance').textContent = '↓ 0.0999 ETH';
+        } else {
+          throw new Error(fundData.error || 'Failed to fund escrow');
+        }
+
+        await sleep(1000);
+
+        // Step 4: Release key
+        addTypingIndicator('agent-a');
+        await sleep(800);
+        removeTypingIndicator();
+
+        addMessage({
+          agent: 'agent-a',
+          name: 'Datacore Alpha',
+          text: 'Payment confirmed in escrow. Releasing decryption key...',
+          action: 'knowledge_release_key',
+          step: 4,
+        });
+
+        const releaseResp = await fetch(API_BASE + '/release-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ offering_id: offeringId }),
+        });
+
+        const releaseData = await releaseResp.json();
+
+        if (releaseData.txHash) {
+          addMessage({
+            agent: 'system',
+            name: 'Escrow Contract',
+            text: 'Key released on-chain!',
+            code: formatTxMessage({
+              escrowId: releaseData.escrowId,
+              txHash: releaseData.txHash,
+            }),
+            html: true,
+            action: 'key_released',
+          });
+        } else {
+          throw new Error(releaseData.error || 'Failed to release key');
+        }
+
+        await sleep(1000);
+
+        // Step 5: Claim payment
+        addTypingIndicator('agent-a');
+        await sleep(800);
+        removeTypingIndicator();
+
+        addMessage({
+          agent: 'agent-a',
+          name: 'Datacore Alpha',
+          text: 'Key released successfully. Claiming payment from escrow...',
+          step: 5,
+        });
+
+        const claimResp = await fetch(API_BASE + '/claim-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ escrow_id: fundData.escrowId }),
+        });
+
+        const claimData = await claimResp.json();
+
+        if (claimData.txHash) {
+          addMessage({
+            agent: 'system',
+            name: 'Escrow Contract',
+            text: 'Payment claimed! Transaction complete.',
+            code: formatTxMessage({
+              escrowId: claimData.escrowId,
+              txHash: claimData.txHash,
+            }),
+            html: true,
+            action: 'complete',
+          });
+
+          document.getElementById('sellerBalance').textContent = '↑ 0.1001 ETH';
+          document.getElementById('buyerPurchases').textContent = '1';
+
+          addMessage({
+            agent: 'agent-a',
+            name: 'Datacore Alpha',
+            text: 'Payment received! Fair exchange completed. 🎉',
+          });
+
+          addMessage({
+            agent: 'agent-b',
+            name: 'Datacore Beta',
+            text: 'Knowledge acquired. The agent economy works!',
+          });
+        } else {
+          throw new Error(claimData.error || 'Failed to claim payment');
+        }
+
+      } catch (error) {
+        addMessage({
+          agent: 'system',
+          name: 'Error',
+          text: 'Transaction failed: ' + error.message,
+        });
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '▶ Run Real Transactions';
+      }
+    }
+
+    // ===== WALLET INFO & COPY =====
+
+    let walletData = {
+      seller: { address: '', balance: '0' },
+      buyer: { address: '', balance: '0' }
+    };
+
+    function shortenAddress(addr) {
+      if (!addr) return '...';
+      return addr.slice(0, 6) + '...' + addr.slice(-4);
+    }
+
+    function txLink(hash) {
+      if (!hash) return '';
+      const short = hash.slice(0, 10) + '...' + hash.slice(-6);
+      return `<a href="https://sepolia.etherscan.io/tx/${hash}" target="_blank" style="color: #818cf8; text-decoration: none;">${short}</a>`;
+    }
+
+    function formatTxMessage(data) {
+      let html = '';
+      for (const [key, value] of Object.entries(data)) {
+        if (key === 'txHash' && value) {
+          html += `<div><span style="color:#71717a">${key}:</span> ${txLink(value)}</div>`;
+        } else {
+          html += `<div><span style="color:#71717a">${key}:</span> ${value}</div>`;
+        }
+      }
+      return html;
+    }
+
+    async function loadWalletInfo() {
+      try {
+        const resp = await fetch(API_BASE + '/wallet-info');
+        const data = await resp.json();
+
+        walletData = data;
+
+        // Update seller
+        const sellerEl = document.getElementById('sellerWallet');
+        sellerEl.textContent = shortenAddress(data.seller.address);
+        sellerEl.dataset.fullAddress = data.seller.address;
+        document.getElementById('sellerBalance').textContent = data.seller.balance + ' ETH';
+
+        // Update buyer
+        const buyerEl = document.getElementById('buyerWallet');
+        buyerEl.textContent = shortenAddress(data.buyer.address);
+        buyerEl.dataset.fullAddress = data.buyer.address;
+        document.getElementById('buyerBalance').textContent = data.buyer.balance + ' ETH';
+
+        // Update offerings count and fetch reputation data
+        const offeringsResp = await fetch(API_BASE + '/offerings');
+        const offeringsData = await offeringsResp.json();
+        document.getElementById('sellerOfferings').textContent = offeringsData.count || 0;
+
+        // If we have offerings, load reputation and profile from the first one
+        if (offeringsData.offerings && offeringsData.offerings.length > 0) {
+          const firstOffering = offeringsData.offerings[0];
+
+          // Update reputation if available
+          if (firstOffering.reputation) {
+            const rep = firstOffering.reputation;
+            document.getElementById('sellerRepOverall').textContent = rep.overall || '-';
+            document.getElementById('sellerRepAccuracy').textContent = rep.accuracy || '-';
+            document.getElementById('sellerRepUniqueness').textContent = rep.uniqueness || '-';
+            document.getElementById('sellerRepCount').textContent = rep.totalFeedback || '0';
+            document.getElementById('sellerReputation').style.display = 'block';
+          }
+
+          // Update profile if available
+          if (firstOffering.perspective || firstOffering.capabilities) {
+            document.getElementById('sellerPerspective').textContent = firstOffering.perspective || '-';
+
+            if (firstOffering.capabilities && firstOffering.capabilities.length > 0) {
+              const capsHtml = firstOffering.capabilities.map(c => `• ${c}`).join('<br>');
+              document.getElementById('sellerCapabilities').innerHTML = capsHtml;
+            }
+
+            document.getElementById('sellerProfile').style.display = 'block';
+          }
+        }
+
+      } catch (e) {
+        console.error('Failed to load wallet info:', e);
+      }
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        return true;
+      }
+    }
+
+    function setupWalletCopy() {
+      document.querySelectorAll('.wallet-addr').forEach(el => {
+        el.addEventListener('click', async function() {
+          const fullAddr = this.dataset.fullAddress;
+          if (fullAddr) {
+            await copyToClipboard(fullAddr);
+            this.classList.add('copied');
+            const original = this.textContent;
+            this.textContent = 'Copied!';
+            setTimeout(() => {
+              this.textContent = original;
+              this.classList.remove('copied');
+            }, 1500);
+          }
+        });
+      });
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadWalletInfo();
+      setupWalletCopy();
+      // Refresh balances periodically
+      setInterval(loadWalletInfo, 30000);
+    });
+  </script>
+</body>
+</html>
